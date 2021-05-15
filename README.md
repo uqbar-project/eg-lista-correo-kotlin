@@ -1,6 +1,10 @@
 
 ## Lista de Correo
 
+[![build](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml) [![coverage](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/master/graph/badge.svg)](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/master/graph/badge.svg) 
+
+![image](./images/mailingList.png)
+
 Este ejercicio consta de varios pasos, en la fase inicial se exploran
 
 - ideas de diseño: trabajo con condicionales, herencia, strategy y un posible decorator

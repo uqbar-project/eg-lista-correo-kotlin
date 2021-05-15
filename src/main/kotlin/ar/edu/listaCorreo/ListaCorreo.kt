@@ -25,7 +25,7 @@ class ListaCorreo {
         mailSender.sendMail(
             Mail(from = post.mailEmisor(),
                 to = this.getMailsDestino(post),
-                subject = "[$prefijo] $(post.asunto)",
+                subject = "[${prefijo}] ${post.asunto}",
                 content = post.mensaje)
         )
     }
