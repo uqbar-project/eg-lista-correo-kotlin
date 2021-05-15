@@ -1,9 +1,7 @@
 package ar.edu.listaCorreo
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 import io.mockk.verify
 
@@ -24,7 +22,12 @@ class TestEnvioAbierto: DescribeSpec({
             val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
             lista.recibirPost(post)
             // esta verificación es exhaustiva pero también hace que este test se rompa muy fácilmente
-            // TODO: armar tests para verificar el tipo de mail que se envía
+            // este test es muy social, está testeando
+            // 1. el mail que se genera (con todos los destinatarios en orden)
+            // 2. que no se envía el mail al usuario que envía el post
+            // 3. que se envía un solo mail
+            //
+            // otra alternativa podría ser crear tests unitarios
             verify(exactly = 1) { mockedMailSender.sendMail(mail = Mail(from="user@usuario.com", to="usuario1@usuario.com, usuario2@usuario.com, usuario3@usuario.com", subject="[algo2] Sale asado?", content = "Lo que dice el asunto")) }
         }
     }

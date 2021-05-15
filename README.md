@@ -19,6 +19,22 @@ Se requiere un software que maneje listas de correo. El sistema debe contemplar:
 
 ## Solución
 
+- [Link al desarrollo de la solución](https://docs.google.com/document/d/1aw8p79d78zos47ommvwZw6fIkHH_Qx_SBfwU3yfJ96k/edit?usp=sharing)
 
+En esta variante elegimos
 
+- modelar con un strategy los modos de suscripción
+- y también con un strategy las formas de validación, eso nos permite encontrar formas de subclasificar las listas de correo por otro criterio a futuro
+- aunque por el momento hay una sola validación, definimos dos tipos de envío: el abierto no tiene validación, termina siendo un [Null Object Pattern](https://refactoring.guru/es/introduce-null-object) o una forma de evitar tener una referencia nullable
+- en este test para envíos abiertos
 
+```kt
+    it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos") {
+        val usuario = Usuario(mailPrincipal = "user@usuario.com")
+        val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
+        lista.recibirPost(post)
+        verify(exactly = 1) { mockedMailSender.sendMail(mail = Mail(from="user@usuario.com", to="usuario1@usuario.com, usuario2@usuario.com, usuario3@usuario.com", subject="[algo2] Sale asado?", content = "Lo que dice el asunto")) }
+    }
+```
+
+estamos probando muchas cosas a la vez (1. el mail que se genera con los destinatarios ordenados, 2. que no se envía el mail al usuario que envía el post y 3. que se envía un solo mail). Otra alternativa podría ser generar varios tests unitarios por separado, aunque tendríamos que repetir la clase de equivalencia y la construcción del fixture para ese test. Por el momento preferimos dejarlo así, aun sabiendo que es un test que fácilmente se rompe si alguna de las condiciones del negocio cambia.
