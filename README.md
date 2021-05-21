@@ -1,73 +1,57 @@
 
 ## Lista de Correo
 
-[![build](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml) [![coverage](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/01-observers-constructor/graph/badge.svg)](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/01-observers-constructor/graph/badge.svg) 
+[![build](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-lista-correo-kotlin/actions/workflows/build.yml) [![coverage](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/02-observers-setter/graph/badge.svg)](https://codecov.io/gh/uqbar-project/eg-lista-correo-kotlin/branch/02-observers-setter/graph/badge.svg) 
 
 ![image](./images/mailingList.png)
 
-### Branch 01-observers-constructor: parte 1
+### Branch 02-observers-setter
 
-En esta rama definimos varios observers:
-
-- el envío de mails pasa a estar en un observer aparte, al cual le pasamos el _mailSender_ utilizando la técnica **constructor injection**.
+En esta pequeña variante el MailObserver no define un constructor específico, entonces la referencia al _mailSender_ se inyecta vía **setter**:
 
 ```kt
-val mockedMailSender = mockk<MailSender>(relaxUnitFun = true)
-describe("dada una lista de envio abierto") {
-    val mockedMailSender = mockk<MailSender>(relaxUnitFun = true)
-    val lista = ListaCorreo().apply {
-        suscribir(Usuario(mailPrincipal = "usuario1@usuario.com"))
-        ...
-        agregarPostObserver(MailObserver(mailSender = mockedMailSender, prefijo = "algo2"))
+    describe("dada una lista de envio abierto") {
+        val mockedMailSender = mockk<MailSender>(relaxUnitFun = true)
+        val lista = ListaCorreo().apply {
+            suscribir(Usuario(mailPrincipal = "usuario1@usuario.com"))
+            ...
+            agregarPostObserver(MailObserver().apply {
+                mailSender = mockedMailSender
+                prefijo = "algo2"
+            })
 ```
 
-El MailObserver define un constructor que exige que le pasemos el _mailSender_:
+La referencia mailSender se inicializa en forma lazy mediante el modificador `lateinit`:
 
 ```kt
-class MailObserver(val mailSender: MailSender, val prefijo: String) : PostObserver {
+class MailObserver : PostObserver {
+    lateinit var mailSender: MailSender
 ```
 
-- también se implementan el bloqueo al usuario que envía muchos post (fíjense que se delega al usuario muchas de las preguntas, pero es el observer el que dispara el cambio)
+esto exige que antes de que lo utilicemos hayamos asignado dicha referencia. 
+
+A diferencia de la inyección por constructor, que garantiza que nuestro observer quede construido en forma consistente, puede pasarnos que nos olvidemos de pasar la referencia al mailSender
+
 
 ```kt
-class BloqueoUsuarioVerbosoObserver : PostObserver {
-
-    override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        val emisor = post.emisor
-        if (emisor.envioMuchosMensajes()) {
-            emisor.bloquear()
-        }
-    }
+    describe("dada una lista de envio abierto") {
+        val lista = ListaCorreo().apply {
+            suscribir(Usuario(mailPrincipal = "usuario1@usuario.com"))
+            ...
+            agregarPostObserver(MailObserver().apply {
+//                mailSender = mockedMailSender
+                prefijo = "algo2"
+            })
 ```
 
-- y por último el registro de post con "malas palabras" que se puede configurar
+y nos salte el siguiente error en runtime:
 
-```kt
-class MalasPalabrasObserver : PostObserver {
-
-    val malasPalabras = mutableListOf<String>()
-    val postConMalasPalabras = mutableListOf<Post>()
-
-    override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        if (tieneMalasPalabras(post)) {
-            //println("Mensaje enviado a admin por mensaje con malas palabras: " + post.mensaje)
-            postConMalasPalabras.add(post)
-        }
-    }
-
-    fun tieneMalasPalabras(post: Post) = malasPalabras.any { post.tienePalabra(it) }
+```bash
+lateinit property mailSender has not been initialized
+kotlin.UninitializedPropertyAccessException: lateinit property mailSender has not been initialized
+	at ar.edu.listaCorreo.MailObserver.postEnviado(PostObserver.kt:12)
+	at ar.edu.listaCorreo.ListaCorreo.recibirPost(ListaCorreo.kt:33)
+	at ar.edu.listaCorreo.TestEnvioAbierto$1$1$1.invokeSuspend(TestEnvioAbierto.kt:25)
 ```
 
-## Notificación a los observers
-
-La lista de correo notifica a los interesados en el evento "post recibido":
-
-```kt
-fun recibirPost(post: Post) {
-        validacionEnvio.validarPost(post, this)
-        post.enviado()
-        // notificación
-        postObservers.forEach { it.postEnviado(post, this) }
-        //
-    }
-```
+Pero también da cierta flexibilidad para modificar las referencias a diferentes mail senders.

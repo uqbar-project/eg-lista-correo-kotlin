@@ -4,7 +4,9 @@ interface PostObserver {
     fun postEnviado(post: Post, lista: ListaCorreo)
 }
 
-class MailObserver(val mailSender: MailSender, val prefijo: String) : PostObserver {
+class MailObserver : PostObserver {
+    lateinit var mailSender: MailSender
+    lateinit var prefijo: String
 
     override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
         mailSender.sendMail(
