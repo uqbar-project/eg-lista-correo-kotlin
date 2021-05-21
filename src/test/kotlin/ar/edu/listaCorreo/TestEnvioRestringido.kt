@@ -13,12 +13,11 @@ class TestEnvioRestringido: DescribeSpec({
         val usuarioSuscripto = Usuario(mailPrincipal = "usuario1@usuario.com")
         val mockedMailSender = mockk<MailSender>(relaxUnitFun = true)
         val lista = ListaCorreo().apply {
-            mailSender = mockedMailSender
-            prefijo = "algo2"
             validacionEnvio = EnvioRestringido()
             suscribir(usuarioSuscripto)
             suscribir(Usuario(mailPrincipal = "usuario2@usuario.com"))
             suscribir(Usuario(mailPrincipal = "usuario3@usuario.com"))
+            agregarPostObserver(MailObserver(mailSender = mockedMailSender, prefijo = "algo2"))
         }
         it("un usuario no suscripto no puede enviar posts a la lista") {
             val usuario = Usuario(mailPrincipal = "user@usuario.com")

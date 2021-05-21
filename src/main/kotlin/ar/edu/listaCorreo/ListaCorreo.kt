@@ -5,8 +5,15 @@ class ListaCorreo {
     private val usuariosPendientes = mutableListOf<Usuario>()
     var tipoSuscripcion: TipoSuscripcion = SuscripcionAbierta()
     var validacionEnvio: ValidacionEnvio = EnvioLibre()
+    val postObservers = mutableListOf<PostObserver>()
+    //
+    // otra opción puede ser construir un objeto que pertenece a una clase anónima
+    // porque la interface ValidacionEnvio solo tiene un método para implementar y el bloque puede convertirse
+    // en un objeto casteable a ValidacionEnvio, resolviendo el método validarPost
+    //
+    // var validacionEnvio = { post: Post, listaCorreo: ListaCorreo -> } as ValidacionEnvio
+    //
     lateinit var mailSender: MailSender
-    var prefijo = ""
 
     fun suscribir(usuario: Usuario) {
         tipoSuscripcion.suscribir(usuario, this)
@@ -22,18 +29,18 @@ class ListaCorreo {
 
     fun recibirPost(post: Post) {
         validacionEnvio.validarPost(post, this)
-        mailSender.sendMail(
-            Mail(from = post.mailEmisor(),
-                to = this.getMailsDestino(post),
-                subject = "[${prefijo}] ${post.asunto}",
-                content = post.mensaje)
-        )
+        post.enviado()
+        postObservers.forEach { it.postEnviado(post, this) }
     }
 
-    private fun getMailsDestino(post: Post) = this.suscriptos
-        .filter { usuario -> usuario != post.emisor }
+    fun getMailsDestino(post: Post) = this.suscriptos
+        .filter { usuario -> usuario != post.emisor && usuario.activo }
         .map { it.mailPrincipal }
         .joinToString(", ")
+
+    fun agregarPostObserver(postObserver: PostObserver) {
+        this.postObservers.add(postObserver)
+    }
 
     /*********************** Definiciones internas  ***************************/
     fun agregarUsuario(usuario: Usuario) {

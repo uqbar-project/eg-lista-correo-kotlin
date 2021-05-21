@@ -11,11 +11,10 @@ class TestEnvioAbierto: DescribeSpec({
     describe("dada una lista de envio abierto") {
         val mockedMailSender = mockk<MailSender>(relaxUnitFun = true)
         val lista = ListaCorreo().apply {
-            mailSender = mockedMailSender
-            prefijo = "algo2"
             suscribir(Usuario(mailPrincipal = "usuario1@usuario.com"))
             suscribir(Usuario(mailPrincipal = "usuario2@usuario.com"))
             suscribir(Usuario(mailPrincipal = "usuario3@usuario.com"))
+            agregarPostObserver(MailObserver(mailSender = mockedMailSender, prefijo = "algo2"))
         }
         it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos") {
             val usuario = Usuario(mailPrincipal = "user@usuario.com")
