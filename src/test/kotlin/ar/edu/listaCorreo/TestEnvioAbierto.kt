@@ -16,8 +16,8 @@ class TestEnvioAbierto: DescribeSpec({
             suscribir(Usuario(mailPrincipal = "usuario2@usuario.com"))
             suscribir(Usuario(mailPrincipal = "usuario3@usuario.com"))
             agregarPostObserver(MailObserver().apply {
-                // como es un Singleton no puedo cambiar el mail sender
-                // mailSender = mockedMailSender
+                // cambio la referencia (indirecta) en el service locator
+                serviceLocator.mailSender = mockedMailSender
                 prefijo = "algo2"
             })
         }
@@ -25,13 +25,6 @@ class TestEnvioAbierto: DescribeSpec({
             val usuario = Usuario(mailPrincipal = "user@usuario.com")
             val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
             lista.recibirPost(post)
-            // esta verificación es exhaustiva pero también hace que este test se rompa muy fácilmente
-            // este test es muy social, está testeando
-            // 1. el mail que se genera (con todos los destinatarios en orden)
-            // 2. que no se envía el mail al usuario que envía el post
-            // 3. que se envía un solo mail
-            //
-            // otra alternativa podría ser crear tests unitarios
             verify(exactly = 1) {
                 mockedMailSender.sendMail(
                     mail = Mail(
@@ -44,8 +37,8 @@ class TestEnvioAbierto: DescribeSpec({
             }
         }
         it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos - prueba con stub fijo anda") {
-            // Como el StubMailSender es una instancia global, nunca se recrea en los tests unitarios
-            // otra desventaja es que para que este test pase hay que blanquear las referencias
+            // cambio la referencia (indirecta) en el service locator y la reseteo para evitar efectos colaterales de otros tests
+            serviceLocator.mailSender = stubMailSender
             stubMailSender.reset()
             //
             val usuario = Usuario(mailPrincipal = "user@usuario.com")

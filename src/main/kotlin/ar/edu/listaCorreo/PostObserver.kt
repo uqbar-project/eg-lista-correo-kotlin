@@ -8,7 +8,7 @@ class MailObserver : PostObserver {
     lateinit var prefijo: String
 
     override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        stubMailSender.sendMail(
+        serviceLocator.mailSender.sendMail(
             Mail(from = post.mailEmisor(),
                 to = listaCorreo.getMailsDestino(post),
                 subject = "[${prefijo}] ${post.asunto}",
