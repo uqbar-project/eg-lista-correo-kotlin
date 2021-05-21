@@ -32,7 +32,7 @@ Si justamente tenemos dos tipos de tests: 1. de comportamiento (mock) y 2. de es
 
 ## La definición del Singleton
 
-Mientras que en otros lenguajes como Java el Singleton involucra [cierta burocracia](), en Kotlin contamos con el concepto `object` que es muy útil:
+Mientras que en otros lenguajes como Java el Singleton involucra [cierta burocracia](https://refactoring.guru/es/design-patterns/singleton/java/example), en Kotlin contamos con el concepto `object` que es muy útil:
 
 ```kt
 object stubMailSender : MailSender {
