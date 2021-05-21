@@ -1,5 +1,6 @@
 package ar.edu.listaCorreo
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
@@ -28,6 +29,9 @@ class TestUsuarioVerboso : DescribeSpec({
 
             lista.recibirPost(Post(emisor = usuario, asunto = "Es verdad 6?", mensaje = "Jajajaja 6!"))
             usuario.activo shouldBe false
+
+            // si quiere mandar un post nuevo debería dar error
+            shouldThrow<BusinessException> { lista.recibirPost(Post(emisor = usuario, asunto = "Es verdad 7?", mensaje = "Jajajaja 7!")) }
         }
     }
 })

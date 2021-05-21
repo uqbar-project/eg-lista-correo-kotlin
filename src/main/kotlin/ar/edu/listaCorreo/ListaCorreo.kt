@@ -6,14 +6,6 @@ class ListaCorreo {
     var tipoSuscripcion: TipoSuscripcion = SuscripcionAbierta()
     var validacionEnvio: ValidacionEnvio = EnvioLibre()
     val postObservers = mutableListOf<PostObserver>()
-    //
-    // otra opción puede ser construir un objeto que pertenece a una clase anónima
-    // porque la interface ValidacionEnvio solo tiene un método para implementar y el bloque puede convertirse
-    // en un objeto casteable a ValidacionEnvio, resolviendo el método validarPost
-    //
-    // var validacionEnvio = { post: Post, listaCorreo: ListaCorreo -> } as ValidacionEnvio
-    //
-    lateinit var mailSender: MailSender
 
     fun suscribir(usuario: Usuario) {
         tipoSuscripcion.suscribir(usuario, this)
@@ -28,6 +20,7 @@ class ListaCorreo {
     }
 
     fun recibirPost(post: Post) {
+        if (!post.emisor.activo) throw BusinessException("El usuario está inhabilitado para enviar posts.")
         validacionEnvio.validarPost(post, this)
         post.enviado()
         postObservers.forEach { it.postEnviado(post, this) }

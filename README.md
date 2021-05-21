@@ -55,3 +55,4 @@ kotlin.UninitializedPropertyAccessException: lateinit property mailSender has no
 ```
 
 Pero también da cierta flexibilidad para modificar las referencias a diferentes mail senders.
+``
