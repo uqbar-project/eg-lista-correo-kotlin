@@ -1,15 +1,14 @@
 package ar.edu.listaCorreo
 
 interface PostObserver {
-    fun postEnviado(post: Post, lista: ListaCorreo)
+    fun postEnviado(post: Post, listaCorreo: ListaCorreo)
 }
 
 class MailObserver : PostObserver {
-    lateinit var mailSender: MailSender
     lateinit var prefijo: String
 
     override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        mailSender.sendMail(
+        stubMailSender.sendMail(
             Mail(from = post.mailEmisor(),
                 to = listaCorreo.getMailsDestino(post),
                 subject = "[${prefijo}] ${post.asunto}",

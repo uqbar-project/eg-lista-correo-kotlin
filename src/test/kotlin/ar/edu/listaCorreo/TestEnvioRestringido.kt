@@ -18,7 +18,8 @@ class TestEnvioRestringido: DescribeSpec({
             suscribir(Usuario(mailPrincipal = "usuario2@usuario.com"))
             suscribir(Usuario(mailPrincipal = "usuario3@usuario.com"))
             agregarPostObserver(MailObserver().apply {
-                mailSender = mockedMailSender
+                // la referencia no existe más, no se puede asignar
+                // mailSender = mockedMailSender
                 prefijo = "algo2"
             })
         }
