@@ -2,9 +2,9 @@ package ar.edu.listaCorreo
 
 data class Usuario(
     val mailPrincipal: String = "",
-    val mailsAlternativos: List<String> = mutableListOf()
+    private val mailsAlternativos: List<String> = mutableListOf()
 ) {
-    var mailsEnviados = 0
+    private var mailsEnviados = 0
     var activo = true
 
     fun envioPost() {
