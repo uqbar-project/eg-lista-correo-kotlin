@@ -68,3 +68,7 @@ Por otra parte, podemos conceder que tiene ventajas
 
 - permite resolver la inyección de dependencias de manera simple, sobre todo cuando varios objetos tienen que compartir el mismo servicio
 - es simple de implementar
+
+![service locator image](./images/serviceLocator.jpg)
+
+[comment]: <> (TODO: Armar un diagrama propio)
