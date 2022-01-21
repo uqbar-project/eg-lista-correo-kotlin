@@ -1,4 +1,4 @@
-package ar.edu.listaCorreo
+package ar.edu.unsam.algo2.listaCorreo
 
 interface PostObserver {
     fun postEnviado(post: Post, listaCorreo: ListaCorreo)

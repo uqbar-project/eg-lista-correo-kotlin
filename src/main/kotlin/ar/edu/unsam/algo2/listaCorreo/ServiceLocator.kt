@@ -1,4 +1,4 @@
-package ar.edu.listaCorreo
+package ar.edu.unsam.algo2.listaCorreo
 
 /**
  * El servide locator es un objeto con baja cohesión que permite un grado extra de indirección
