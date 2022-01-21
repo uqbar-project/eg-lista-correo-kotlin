@@ -1,4 +1,4 @@
-package ar.edu.listaCorreo
+package ar.edu.unsam.algo2.listaCorreo
 
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
@@ -46,14 +46,14 @@ class TestEnvioAbierto: DescribeSpec({
         it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos - prueba con stub fijo anda") {
             // Como el StubMailSender es una instancia global, nunca se recrea en los tests unitarios
             // otra desventaja es que para que este test pase hay que blanquear las referencias
-            stubMailSender.reset()
+            StubMailSender.reset()
             //
             val usuario = Usuario(mailPrincipal = "user@usuario.com")
             val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
             lista.recibirPost(post)
 
-            stubMailSender.mailsEnviados.size shouldBe 1
-            stubMailSender.envioMail(usuario) shouldBe true
+            StubMailSender.mailsEnviados.size shouldBe 1
+            StubMailSender.envioMail(usuario) shouldBe true
         }
     }
 })
