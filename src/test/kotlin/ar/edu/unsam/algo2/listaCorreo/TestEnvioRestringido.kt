@@ -1,4 +1,4 @@
-package ar.edu.listaCorreo
+package ar.edu.unsam.algo2.listaCorreo
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
