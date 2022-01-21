@@ -95,7 +95,7 @@ class EnvioLibre : ValidacionEnvio {
 
 class EnvioRestringido : ValidacionEnvio {
     override fun validarPost(post: Post, listaCorreo: ListaCorreo) {
-        if (!(listaCorreo.contieneUsuario(post.emisor))) {
+        if (!listaCorreo.contieneUsuario(post.emisor)) {
             throw BusinessException("No puede enviar un mensaje porque no pertenece a la lista")
         }
     }
