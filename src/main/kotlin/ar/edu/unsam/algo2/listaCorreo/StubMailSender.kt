@@ -1,6 +1,6 @@
 package ar.edu.unsam.algo2.listaCorreo
 
-object stubMailSender : MailSender {
+object StubMailSender : MailSender {
     val mailsEnviados = mutableListOf<Mail>()
 
     override fun sendMail(mail: Mail) {

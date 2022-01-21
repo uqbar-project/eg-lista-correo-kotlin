@@ -38,15 +38,15 @@ class TestEnvioAbierto: DescribeSpec({
         }
         it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos - prueba con stub fijo anda") {
             // cambio la referencia (indirecta) en el service locator y la reseteo para evitar efectos colaterales de otros tests
-            serviceLocator.mailSender = stubMailSender
-            stubMailSender.reset()
+            serviceLocator.mailSender = StubMailSender
+            StubMailSender.reset()
             //
             val usuario = Usuario(mailPrincipal = "user@usuario.com")
             val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
             lista.recibirPost(post)
 
-            stubMailSender.mailsEnviados.size shouldBe 1
-            stubMailSender.envioMail(usuario) shouldBe true
+            StubMailSender.mailsEnviados.size shouldBe 1
+            StubMailSender.envioMail(usuario) shouldBe true
         }
     }
 })
