@@ -17,7 +17,7 @@ class ListaCorreo {
     }
 
     fun rechazarSuscripcion(usuario: Usuario) {
-        this.eliminarUsuarioPendiente(usuario)
+        tipoSuscripcion.rechazarSuscripcion(usuario, this)
     }
 
     fun recibirPost(post: Post) {
@@ -57,6 +57,7 @@ class ListaCorreo {
 interface TipoSuscripcion {
     fun suscribir(usuario: Usuario, listaCorreo: ListaCorreo)
     fun confirmarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo)
+    fun rechazarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo)
 }
 
 class SuscripcionAbierta : TipoSuscripcion {
@@ -66,6 +67,10 @@ class SuscripcionAbierta : TipoSuscripcion {
 
     override fun confirmarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo) {
         throw BusinessException("No debe confirmar la suscripción para la lista de suscripción abierta")
+    }
+
+    override fun rechazarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo) {
+        throw BusinessException("No debe rechazar la suscripción para la lista de suscripción abierta")
     }
 }
 
@@ -77,6 +82,10 @@ class SuscripcionCerrada : TipoSuscripcion {
     override fun confirmarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo) {
         listaCorreo.eliminarUsuarioPendiente(usuario)
         listaCorreo.agregarUsuario(usuario)
+    }
+
+    override fun rechazarSuscripcion(usuario: Usuario, listaCorreo: ListaCorreo) {
+        listaCorreo.eliminarUsuarioPendiente(usuario)
     }
 }
 

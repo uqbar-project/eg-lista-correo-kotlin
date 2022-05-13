@@ -18,5 +18,8 @@ class TestSuscripcionAbierta: DescribeSpec({
         it("tratar de confirmar la suscripción de un usuario debe dar error") {
             shouldThrow<BusinessException> { lista.confirmarSuscripcion(Usuario(mailPrincipal = "otroUsuario@usuario.com")) }
         }
+        it("tratar de rechazar la suscripción de un usuario debe dar error") {
+            shouldThrow<BusinessException> { lista.rechazarSuscripcion(Usuario(mailPrincipal = "otroUsuario@usuario.com")) }
+        }
     }
 })
