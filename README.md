@@ -14,7 +14,7 @@ class MailObserver : PostObserver {
     lateinit var prefijo: String
 
     override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        stubMailSender.sendMail(
+        StubMailSender.sendMail(
             Mail(from = post.mailEmisor(),
                 to = listaCorreo.getMailsDestino(post),
                 subject = "[${prefijo}] ${post.asunto}",
@@ -35,7 +35,7 @@ Si justamente tenemos dos tipos de tests: 1. de comportamiento (mock) y 2. de es
 Mientras que en otros lenguajes como Java el Singleton involucra [cierta burocracia](https://refactoring.guru/es/design-patterns/singleton/java/example), en Kotlin contamos con el concepto `object` que es muy útil:
 
 ```kt
-object stubMailSender : MailSender {
+object StubMailSender : MailSender {
     val mailsEnviados = mutableListOf<Mail>()
 
     override fun sendMail(mail: Mail) {
@@ -53,14 +53,14 @@ Aun cuando este test funciona:
         it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos - prueba con stub fijo anda") {
             // Como el StubMailSender es una instancia global, nunca se recrea en los tests unitarios
             // otra desventaja es que para que este test pase hay que blanquear las referencias
-            stubMailSender.reset()
+            StubMailSender.reset()
             //
             val usuario = Usuario(mailPrincipal = "user@usuario.com")
             val post = Post(emisor = usuario, asunto = "Sale asado?", mensaje = "Lo que dice el asunto")
             lista.recibirPost(post)
 
-            stubMailSender.mailsEnviados.size shouldBe 1
-            stubMailSender.envioMail(usuario) shouldBe true
+            StubMailSender.mailsEnviados.size shouldBe 1
+            StubMailSender.envioMail(usuario) shouldBe true
         }
 ```
 
