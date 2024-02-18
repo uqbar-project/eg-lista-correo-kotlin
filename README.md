@@ -64,10 +64,9 @@ La lista de correo notifica a los interesados en el evento "post recibido":
 
 ```kt
 fun recibirPost(post: Post) {
-        validacionEnvio.validarPost(post, this)
-        post.enviado()
-        // notificación
-        postObservers.forEach { it.postEnviado(post, this) }
-        //
-    }
+    if (!post.emisor.activo) throw BusinessException("El usuario está inhabilitado para enviar posts.")
+    validacionEnvio.validarPost(post, this)
+    post.enviado()
+    postObservers.forEach { it.postEnviado(post, this) }
+}
 ```
