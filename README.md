@@ -43,8 +43,8 @@ En cuanto al test de estado, como el stub es un singleton debemos enviar un mens
 ```kt
     it("un usuario no suscripto puede enviar posts a la lista y le llegan solo a los suscriptos - prueba con stub fijo anda") {
         // cambio la referencia (indirecta) en el service locator y la reseteo para evitar efectos colaterales de otros tests
-        serviceLocator.mailSender = stubMailSender
-        stubMailSender.reset()
+        serviceLocator.mailSender = StubMailSender
+        StubMailSender.reset()
 ```
 
 ## Resumen
