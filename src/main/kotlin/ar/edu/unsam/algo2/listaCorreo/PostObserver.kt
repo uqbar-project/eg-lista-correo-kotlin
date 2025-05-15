@@ -1,15 +1,15 @@
 package ar.edu.unsam.algo2.listaCorreo
 
 interface PostObserver {
-    fun postEnviado(post: Post, lista: ListaCorreo)
+    fun postEnviado(post: Post, listaCorreo: ListaCorreo)
 }
 
 class MailObserver(val mailSender: MailSender, val prefijo: String) : PostObserver {
 
-    override fun postEnviado(post: Post, lista: ListaCorreo) {
+    override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
         mailSender.sendMail(
             Mail(from = post.mailEmisor(),
-                to = lista.getMailsDestino(post),
+                to = listaCorreo.getMailsDestino(post),
                 subject = "[${prefijo}] ${post.asunto}",
                 content = post.mensaje)
         )
@@ -19,10 +19,17 @@ class MailObserver(val mailSender: MailSender, val prefijo: String) : PostObserv
 
 class BloqueoUsuarioVerbosoObserver : PostObserver {
 
-    override fun postEnviado(post: Post, lista: ListaCorreo) {
-        val emisor = post.emisor
-        if (emisor.envioMuchosMensajes()) {
-            emisor.bloquear()
+    val postsPorUsuario = mutableMapOf<Usuario, Int>()
+
+    override fun postEnviado(
+        post: Post,
+        listaCorreo: ListaCorreo
+    ) {
+        val usuarioEmisor = post.emisor
+        val cantidadPosts = postsPorUsuario.getOrDefault(usuarioEmisor, 0) + 1
+        postsPorUsuario.put(usuarioEmisor, cantidadPosts)
+        if (cantidadPosts > 5) {
+            usuarioEmisor.bloquear()
         }
     }
 
@@ -30,10 +37,10 @@ class BloqueoUsuarioVerbosoObserver : PostObserver {
 
 class MalasPalabrasObserver : PostObserver {
 
-    val malasPalabras = mutableListOf<String>()
-    val postConMalasPalabras = mutableListOf<Post>()
+    val malasPalabras = mutableSetOf<String>()
+    val postConMalasPalabras = mutableSetOf<Post>()
 
-    override fun postEnviado(post: Post, lista: ListaCorreo) {
+    override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
         if (tieneMalasPalabras(post)) {
             //println("Mensaje enviado a admin por mensaje con malas palabras: " + post.mensaje)
             postConMalasPalabras.add(post)
