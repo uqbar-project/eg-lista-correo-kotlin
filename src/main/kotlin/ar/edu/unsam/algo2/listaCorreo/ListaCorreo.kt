@@ -22,14 +22,11 @@ class ListaCorreo {
     fun recibirPost(post: Post) {
         if (!post.emisor.activo) throw BusinessException("El usuario está inhabilitado para enviar posts.")
         validacionEnvio.validarPost(post, this)
-        post.enviado()
         postObservers.forEach { it.postEnviado(post, this) }
     }
 
     fun getMailsDestino(post: Post) = this.suscriptos
-        .filter { usuario -> usuario != post.emisor && usuario.activo }
-        .map { it.mailPrincipal }
-        .joinToString(", ")
+        .filter { usuario -> usuario != post.emisor && usuario.activo }.joinToString(", ") { it.mailPrincipal }
 
     fun agregarPostObserver(postObserver: PostObserver) {
         this.postObservers.add(postObserver)
