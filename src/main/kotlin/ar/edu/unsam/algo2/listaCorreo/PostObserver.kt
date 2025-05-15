@@ -20,10 +20,17 @@ class MailObserver : PostObserver {
 
 class BloqueoUsuarioVerbosoObserver : PostObserver {
 
-    override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
-        val emisor = post.emisor
-        if (emisor.envioMuchosMensajes()) {
-            emisor.bloquear()
+    val postsPorUsuario = mutableMapOf<Usuario, Int>()
+
+    override fun postEnviado(
+        post: Post,
+        listaCorreo: ListaCorreo
+    ) {
+        val usuarioEmisor = post.emisor
+        val cantidadPosts = postsPorUsuario.getOrDefault(usuarioEmisor, 0) + 1
+        postsPorUsuario.put(usuarioEmisor, cantidadPosts)
+        if (cantidadPosts > 5) {
+            usuarioEmisor.bloquear()
         }
     }
 
@@ -31,8 +38,8 @@ class BloqueoUsuarioVerbosoObserver : PostObserver {
 
 class MalasPalabrasObserver : PostObserver {
 
-    val malasPalabras = mutableListOf<String>()
-    val postConMalasPalabras = mutableListOf<Post>()
+    val malasPalabras = mutableSetOf<String>()
+    val postConMalasPalabras = mutableSetOf<Post>()
 
     override fun postEnviado(post: Post, listaCorreo: ListaCorreo) {
         if (tieneMalasPalabras(post)) {
